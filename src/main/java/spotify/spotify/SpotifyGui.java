@@ -2,6 +2,7 @@ package spotify.spotify;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -11,12 +12,11 @@ import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
 import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -25,13 +25,6 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-
-import retrofit2.Call;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SpotifyGui extends JFrame {
 
@@ -39,9 +32,12 @@ public class SpotifyGui extends JFrame {
 	private JPanel searchPanel, trackPanel, westPanel, eastPanel;
 	private JLabel songLbl, artistLbl, imageLbl;
 	private JList<Artist> artists;
+	private JList<String> recentList;
+	private DefaultListModel<String> recentModel;
 	private JTextField titleSearch, artistSearch;
 	private JButton searchButton;
 	private Container container;
+	private Component currCenter;
 
 	private Color spotifyGreen; // #638c00
 
@@ -62,9 +58,28 @@ public class SpotifyGui extends JFrame {
 
 		spotifyGreen = Color.decode("#638c00");
 
+		// DEFAULT CENTER
 		JLabel defaultImage = new JLabel(new ImageIcon("bigspotify.png"));
 		container.add(defaultImage, BorderLayout.CENTER);
 		container.setBackground(spotifyGreen);
+		currCenter = defaultImage;
+
+		// WEST - recent searches
+		westPanel = new JPanel();
+		westPanel.setBackground(spotifyGreen);
+		westPanel.setBorder(new LineBorder(Color.BLACK));
+		recentModel = new DefaultListModel<String>();
+		recentList = new JList<String>(recentModel);
+		recentList.setBackground(spotifyGreen);
+		recentModel.addElement("RECENT SEARCHES");
+		westPanel.add(recentList);
+		container.add(westPanel, BorderLayout.WEST);
+
+		// EAST - more songs from artist
+		eastPanel = new JPanel();
+		eastPanel.setBackground(spotifyGreen);
+		eastPanel.setBorder(new LineBorder(Color.BLACK));
+		container.add(eastPanel, BorderLayout.EAST);
 
 		// NORTH - search
 		searchPanel = new JPanel();
@@ -101,15 +116,12 @@ public class SpotifyGui extends JFrame {
 
 		searchButton.addActionListener(new ActionListener() {
 
-			private static final long serialVersionUID = 1L;
-
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				String title = titleSearch.getText();
 				String artist = artistSearch.getText();
 
-				if (title.equals("")
-						|| title.equals("search song title                 ")) {
+				if (title.equals("") || title.equals("search song title                 ")) {
 					artists = new JList<Artist>();
 					artists.setBackground(spotifyGreen);
 					artists.addMouseListener(new MouseAdapter() {
@@ -117,19 +129,20 @@ public class SpotifyGui extends JFrame {
 						@Override
 						public void mouseClicked(MouseEvent e) {
 							if (e.getClickCount() == 2) {
-
 								Artist artist = artists.getSelectedValue();
+								recentModel.addElement(artist.toString());
 								setArtistInfo(artist);
 							}
 						}
 					});
-					container.add(artists, BorderLayout.CENTER);
+					resetContainer(artists);
+					// container.add(artists, BorderLayout.CENTER);
+					currCenter = artists;
 					new ArtistThread(artists, artist).start();
 				} else {
-					if (artist.equals("")
-							|| artist
-									.equals("search song artist               ")) {
+					if (artist.equals("") || artist.equals("search song artist               ")) {
 						artist = null;
+
 					}
 					// CENTER - track
 					setUpTrack(title, artist);
@@ -138,26 +151,7 @@ public class SpotifyGui extends JFrame {
 			}
 		});
 
-		// RIGHT -
-
-		eastPanel = new JPanel();
-		eastPanel.setBackground(spotifyGreen);
-		eastPanel.setBorder(new LineBorder(Color.BLACK));
-		container.add(eastPanel, BorderLayout.EAST);
-
-		// LEFT -
-		westPanel = new JPanel();
-		westPanel.setBackground(spotifyGreen);
-		westPanel.setBorder(new LineBorder(Color.BLACK));
-		container.add(westPanel, BorderLayout.WEST);
-
-		// DEFAULT CENTER
 	}// end GUI
-
-	public static void main(String[] args) {
-		SpotifyGui gui = new SpotifyGui();
-		gui.setVisible(true);
-	}
 
 	private void setArtistInfo(Artist artist) {
 		JPanel artistPanel = new JPanel();
@@ -196,8 +190,10 @@ public class SpotifyGui extends JFrame {
 		artistPanel.add(imagePanel);
 		artistPanel.add(reviewPanel);
 
-		container.add(artistPanel, BorderLayout.CENTER);
+		resetContainer(artistPanel);
+		currCenter = artistPanel;
 		container.revalidate();
+
 	}
 
 	private void setUpTrack(String title, String artist) {
@@ -212,10 +208,13 @@ public class SpotifyGui extends JFrame {
 
 					Song song = songs.getSelectedValue();
 					setSongInfo(song);
+					recentModel.addElement(song.toString());
+
 				}
 			}
 		});
-		container.add(songs, BorderLayout.CENTER);
+		resetContainer(songs);
+		currCenter = songs;
 		SongThread thread = new SongThread(title, artist, songs);
 		thread.start();
 		container.revalidate();
@@ -236,7 +235,7 @@ public class SpotifyGui extends JFrame {
 		trackPanel.add(songLbl, BorderLayout.SOUTH);
 		trackPanel.add(artistLbl, BorderLayout.NORTH);
 		trackPanel.add(imageLbl, BorderLayout.CENTER);
-		container.add(trackPanel, BorderLayout.CENTER);
+
 		songLbl.setText(song.getTitle());
 		artistLbl.setText(song.getArtist());
 
@@ -253,7 +252,19 @@ public class SpotifyGui extends JFrame {
 				e.printStackTrace();
 			}
 		}
-		
+		// container.add(trackPanel, BorderLayout.CENTER);
+		resetContainer(trackPanel);
+		currCenter = trackPanel;
 		container.revalidate();
+	}
+
+	private void resetContainer(Component c) {
+		container.remove(currCenter);
+		container.add(c, BorderLayout.CENTER);
+	}
+
+	public static void main(String[] args) {
+		SpotifyGui gui = new SpotifyGui();
+		gui.setVisible(true);
 	}
 }
