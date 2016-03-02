@@ -142,9 +142,9 @@ public class SpotifyGui extends JFrame {
 		container.add(westPanel, BorderLayout.WEST);
 		
 		// DEFAULT CENTER
-		JLabel defaultImage = new JLabel(new ImageIcon("spotify_icon.png"));
+		JLabel defaultImage = new JLabel(new ImageIcon("bigspotify.png"));
 		container.add(defaultImage, BorderLayout.CENTER);
-		setForeground(spotifyGreen);
+		container.setBackground(spotifyGreen);
 
 	}// end GUI
 
