@@ -203,7 +203,7 @@ public class SpotifyGui extends JFrame {
 	private void setUpTrack(String title, String artist) {
 
 		JList<Song> songs = new JList<Song>();
-
+		songs.setBackground(spotifyGreen);
 		songs.addMouseListener(new MouseAdapter() {
 
 			@Override
