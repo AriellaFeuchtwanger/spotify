@@ -11,5 +11,5 @@ public interface SpotifyService {
 	Call<ArtistObject> searchArtist(@Query("name") String name);
 	
 	@GET("song/search?api_key=VMDU6RQBYQKV6N0RR&format=json&&bucket=id:7digital-US&bucket=tracks")
-	Call<SongObject> searchSong(@Query("title") String title);
+	Call<SongObject> searchSong(@Query("title") String title, @Query("artist") String artist);
 }

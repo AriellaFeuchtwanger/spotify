@@ -31,7 +31,7 @@ public class AppTest{
 		Retrofit retrofit = new Retrofit.Builder().baseUrl("http://developer.echonest.com/api/v4/")
 				.addConverterFactory(GsonConverterFactory.create()).build();
 		SpotifyService service = retrofit.create(SpotifyService.class);
-		Call<SongObject> call = service.searchSong("fight song");
+		Call<SongObject> call = service.searchSong("fight song", "rachel platten");
 		
 		Response<SongObject> response = call.execute();
 		
