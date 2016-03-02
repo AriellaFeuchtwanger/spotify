@@ -131,10 +131,10 @@ public class SpotifyGui extends JFrame {
 										BoxLayout.X_AXIS));
 
 								ArtistImage[] images = artist.getImages();
-								/*
-								for (ArtistImage image : images) {
+								
+								//for (int i = 0; i < 5; i++) {
 									JLabel label = new JLabel();
-									String imageURL = image.getURL();
+									String imageURL = images[0].getURL();
 									URL url;
 
 									try {
@@ -150,13 +150,13 @@ public class SpotifyGui extends JFrame {
 												"defaultImage.jpg"));
 									}
 									imagePanel.add(label);
-								}
-	*/
+								//}
+	
 								artistPanel.add(imagePanel);
 								artistPanel.add(reviewPanel);
 
 								container.add(artistPanel, BorderLayout.CENTER);
-								repaint();
+								container.revalidate();
 							}
 
 						}
