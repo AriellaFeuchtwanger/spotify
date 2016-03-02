@@ -22,4 +22,8 @@ public class Artist {
 	public ArtistLocation getArtist_location() {
 		return artist_location;
 	}
+	
+	public String toString(){
+		return name;
+	}
 }

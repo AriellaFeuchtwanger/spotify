@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -17,6 +18,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
@@ -31,7 +33,7 @@ public class SpotifyGui extends JFrame {
 	private static final long serialVersionUID = 1L;
 	private JPanel searchPanel, trackPanel, westPanel, eastPanel;
 	private JLabel songLbl, artistLbl, imageLbl;
-	private ImageIcon trackImage, defaultImage;
+	private JList<Artist> artists;
 	private JTextField titleSearch, artistSearch;
 	private JButton searchButton;
 
@@ -53,24 +55,6 @@ public class SpotifyGui extends JFrame {
 		}
 
 		spotifyGreen = Color.decode("#638c00");
-		defaultImage = new ImageIcon("defaultImage.png");
-
-		// CENTER - track
-
-		trackPanel = new JPanel(new BorderLayout());
-		trackPanel.setBorder(new LineBorder(Color.BLACK));
-		trackPanel.setBackground(spotifyGreen);
-		songLbl = new JLabel("song");
-		artistLbl = new JLabel("artist");
-		imageLbl = new JLabel();
-		// image.setSize(200, 200);
-		songLbl.setBorder(new LineBorder(Color.BLACK));
-		artistLbl.setBorder(new LineBorder(Color.BLACK));
-		imageLbl.setBorder(new LineBorder(Color.BLACK));
-		trackPanel.add(songLbl, BorderLayout.SOUTH);
-		trackPanel.add(artistLbl, BorderLayout.NORTH);
-		trackPanel.add(imageLbl, BorderLayout.CENTER);
-		container.add(trackPanel, BorderLayout.CENTER);
 
 		// NORTH - search
 		searchPanel = new JPanel();
@@ -83,7 +67,7 @@ public class SpotifyGui extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				titleSearch.setText(" ");
+				titleSearch.setText(null);
 			}
 
 		});
@@ -92,7 +76,7 @@ public class SpotifyGui extends JFrame {
 
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				artistSearch.setText(" ");
+				artistSearch.setText(null);
 			}
 
 		});
@@ -105,63 +89,39 @@ public class SpotifyGui extends JFrame {
 		searchPanel.add(searchButton);
 		container.add(searchPanel, BorderLayout.NORTH);
 
-		searchButton.addActionListener(new AbstractAction() {
+		searchButton.addActionListener(new ActionListener() {
 
 			private static final long serialVersionUID = 1L;
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				String title = titleSearch.getText();
+				String artist = artistSearch.getText();
+				
+				if (title.equals("")) {
+					artists = new JList<Artist>();
+					container.add(artists, BorderLayout.CENTER);
+					new ArtistThread(artists, artist).start();
+				} else {
+					
+						// CENTER - track
 
-				// search song and get artist.
-
-				Retrofit retrofit = new Retrofit.Builder()
-						.baseUrl("http://developer.echonest.com/api/v4/")
-						.addConverterFactory(GsonConverterFactory.create())
-						.build();
-				SpotifyService service = retrofit.create(SpotifyService.class);
-				Call<SongObject> call = service.searchSong(
-						titleSearch.getText(), artistSearch.getText());
-
-				Response<SongObject> response;
-
-				try {
-					response = call.execute();
-					SongObject obj = response.body();
-
-					Song[] songs = obj.getSongs();
-					Song song = songs[0];
-					songLbl.setText(song.getTitle());
-					artistLbl.setText(song.getArtist());
-
-					try {
-						Track[] tracks = songs[0].getTracks();
-						String imageURL = tracks[0].getRelease_image();
-						//trackImage = new ImageIcon(imageURL);
-						URL track = new URL(imageURL);
-						BufferedImage trackImage = ImageIO.read(track);
-						imageLbl.setIcon(new ImageIcon(trackImage));
-
-						// IMAGE IS NOT SETTING YET
-
-					} catch (ArrayIndexOutOfBoundsException e) {
-						//imageLbl.setText("image unavailable");
-						imageLbl.setIcon(new ImageIcon("defaultImage.jpg"));
-
-						// IMAGE IS NOT SETTING YET
-					}
-
-				} catch (ArrayIndexOutOfBoundsException e) {
-
-					songLbl.setText("unknown song");
-					artistLbl.setText("unknown artist");
-
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+						trackPanel = new JPanel(new BorderLayout());
+						trackPanel.setBorder(new LineBorder(Color.BLACK));
+						trackPanel.setBackground(spotifyGreen);
+						songLbl = new JLabel("song");
+						artistLbl = new JLabel("artist");
+						imageLbl = new JLabel(new ImageIcon("defaultImage.jpg"));
+						songLbl.setBorder(new LineBorder(Color.BLACK));
+						artistLbl.setBorder(new LineBorder(Color.BLACK));
+						trackPanel.add(songLbl, BorderLayout.SOUTH);
+						trackPanel.add(artistLbl, BorderLayout.NORTH);
+						trackPanel.add(imageLbl, BorderLayout.CENTER);
+						container.add(trackPanel, BorderLayout.CENTER);
+						SongThread thread = new SongThread(title, artist, songLbl, artistLbl, imageLbl);
+						thread.start();
 				}
-
 			}
-
 		});
 
 		// RIGHT -
@@ -177,12 +137,7 @@ public class SpotifyGui extends JFrame {
 		westPanel.setBorder(new LineBorder(Color.BLACK));
 		container.add(westPanel, BorderLayout.WEST);
 
-	} // end GUI
-
-	private void setIcon() {
-		// TODO Auto-generated method stub
-
-	}
+	}// end GUI
 
 	public static void main(String[] args) {
 		SpotifyGui gui = new SpotifyGui();
