@@ -3,6 +3,7 @@ package spotify.spotify;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -98,19 +99,22 @@ public class SpotifyGui extends JFrame {
 				String title = titleSearch.getText();
 				String artist = artistSearch.getText();
 				
-				if (title.equals("")) {
+				if (title.equals("") || title.equals("search song title                 ")) {
 					artists = new JList<Artist>();
+					artists.setBackground(spotifyGreen);
 					container.add(artists, BorderLayout.CENTER);
 					new ArtistThread(artists, artist).start();
 				} else {
 					
 						// CENTER - track
-
+						Font font = new Font("Times New Roman", Font.PLAIN, 18);
 						trackPanel = new JPanel(new BorderLayout());
 						trackPanel.setBorder(new LineBorder(Color.BLACK));
 						trackPanel.setBackground(spotifyGreen);
 						songLbl = new JLabel("song");
+						songLbl.setFont(font);
 						artistLbl = new JLabel("artist");
+						artistLbl.setFont(font);
 						imageLbl = new JLabel(new ImageIcon("defaultImage.jpg"));
 						songLbl.setBorder(new LineBorder(Color.BLACK));
 						artistLbl.setBorder(new LineBorder(Color.BLACK));
@@ -136,6 +140,11 @@ public class SpotifyGui extends JFrame {
 		westPanel.setBackground(spotifyGreen);
 		westPanel.setBorder(new LineBorder(Color.BLACK));
 		container.add(westPanel, BorderLayout.WEST);
+		
+		// DEFAULT CENTER
+		JLabel defaultImage = new JLabel(new ImageIcon("spotify_icon.png"));
+		container.add(defaultImage, BorderLayout.CENTER);
+		setForeground(spotifyGreen);
 
 	}// end GUI
 
