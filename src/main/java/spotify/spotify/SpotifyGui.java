@@ -2,6 +2,7 @@ package spotify.spotify;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -42,6 +43,7 @@ public class SpotifyGui extends JFrame {
 	private JTextField titleSearch, artistSearch;
 	private JButton searchButton;
 	private Container container;
+	private Component currCenter;
 
 	private Color spotifyGreen; // #638c00
 
@@ -61,10 +63,11 @@ public class SpotifyGui extends JFrame {
 		}
 
 		spotifyGreen = Color.decode("#638c00");
-
+		//DEFAULT CENTER
 		JLabel defaultImage = new JLabel(new ImageIcon("bigspotify.png"));
 		container.add(defaultImage, BorderLayout.CENTER);
 		container.setBackground(spotifyGreen);
+		currCenter = defaultImage;
 
 		// NORTH - search
 		searchPanel = new JPanel();
@@ -123,7 +126,9 @@ public class SpotifyGui extends JFrame {
 							}
 						}
 					});
-					container.add(artists, BorderLayout.CENTER);
+					resetContainer(artists);
+					//container.add(artists, BorderLayout.CENTER);
+					currCenter = artists;
 					new ArtistThread(artists, artist).start();
 				} else {
 					if (artist.equals("")
@@ -196,8 +201,10 @@ public class SpotifyGui extends JFrame {
 		artistPanel.add(imagePanel);
 		artistPanel.add(reviewPanel);
 
-		container.add(artistPanel, BorderLayout.CENTER);
+		resetContainer(artistPanel);
+		currCenter = artistPanel;
 		container.revalidate();
+		
 	}
 
 	private void setUpTrack(String title, String artist) {
@@ -215,7 +222,8 @@ public class SpotifyGui extends JFrame {
 				}
 			}
 		});
-		container.add(songs, BorderLayout.CENTER);
+		resetContainer(songs);
+		currCenter = songs;
 		SongThread thread = new SongThread(title, artist, songs);
 		thread.start();
 		container.revalidate();
@@ -236,7 +244,7 @@ public class SpotifyGui extends JFrame {
 		trackPanel.add(songLbl, BorderLayout.SOUTH);
 		trackPanel.add(artistLbl, BorderLayout.NORTH);
 		trackPanel.add(imageLbl, BorderLayout.CENTER);
-		container.add(trackPanel, BorderLayout.CENTER);
+		
 		songLbl.setText(song.getTitle());
 		artistLbl.setText(song.getArtist());
 
@@ -253,7 +261,14 @@ public class SpotifyGui extends JFrame {
 				e.printStackTrace();
 			}
 		}
-		
+		//container.add(trackPanel, BorderLayout.CENTER);
+		resetContainer(trackPanel);
+		currCenter = trackPanel;
 		container.revalidate();
+	}
+	
+	private void resetContainer(Component c){
+		container.remove(currCenter);
+		container.add(c, BorderLayout.CENTER);
 	}
 }
