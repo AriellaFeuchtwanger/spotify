@@ -41,6 +41,7 @@ public class SpotifyGui extends JFrame {
 	private JList<Artist> artists;
 	private JTextField titleSearch, artistSearch;
 	private JButton searchButton;
+	private Container container;
 
 	private Color spotifyGreen; // #638c00
 
@@ -49,7 +50,7 @@ public class SpotifyGui extends JFrame {
 		setSize(800, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
-		Container container = getContentPane();
+		container = getContentPane();
 		container.setLayout(new BorderLayout());
 
 		try {
@@ -114,53 +115,9 @@ public class SpotifyGui extends JFrame {
 							if (e.getClickCount() == 2) {
 
 								Artist artist = artists.getSelectedValue();
-								JPanel artistPanel = new JPanel();
-
-								JPanel reviewPanel = new JPanel();
-								reviewPanel.setLayout(new BoxLayout(
-										reviewPanel, BoxLayout.Y_AXIS));
-								ArtistReview[] reviews = artist.getReviews();
-
-								for (ArtistReview review : reviews) {
-									reviewPanel.add(new JLabel(review
-											.getSummary()));
-								}
-
-								JPanel imagePanel = new JPanel();
-								imagePanel.setLayout(new BoxLayout(imagePanel,
-										BoxLayout.X_AXIS));
-
-								ArtistImage[] images = artist.getImages();
-								
-								//for (int i = 0; i < 5; i++) {
-									JLabel label = new JLabel();
-									String imageURL = images[0].getURL();
-									URL url;
-
-									try {
-										url = new URL(imageURL);
-										BufferedImage artistImage = ImageIO
-												.read(url);
-										label.setIcon(new ImageIcon(artistImage));
-									} catch (IOException e1) {
-										// TODO Auto-generated catch block
-										e1.printStackTrace();
-									} catch (NullPointerException e2) {
-										label.setIcon(new ImageIcon(
-												"defaultImage.jpg"));
-									}
-									imagePanel.add(label);
-								//}
-	
-								artistPanel.add(imagePanel);
-								artistPanel.add(reviewPanel);
-
-								container.add(artistPanel, BorderLayout.CENTER);
-								container.revalidate();
+								setArtistInfo(artist);
 							}
-
 						}
-
 					});
 					container.add(artists, BorderLayout.CENTER);
 					new ArtistThread(artists, artist).start();
@@ -214,4 +171,49 @@ public class SpotifyGui extends JFrame {
 		gui.setVisible(true);
 	}
 
+	private void setArtistInfo(Artist artist){
+		JPanel artistPanel = new JPanel();
+
+		JPanel reviewPanel = new JPanel();
+		reviewPanel.setLayout(new BoxLayout(
+				reviewPanel, BoxLayout.Y_AXIS));
+		ArtistReview[] reviews = artist.getReviews();
+
+		for (ArtistReview review : reviews) {
+			reviewPanel.add(new JLabel(review
+					.getSummary()));
+		}
+
+		JPanel imagePanel = new JPanel();
+		imagePanel.setLayout(new BoxLayout(imagePanel,
+				BoxLayout.X_AXIS));
+
+		ArtistImage[] images = artist.getImages();
+		
+		//for (int i = 0; i < 5; i++) {
+			JLabel label = new JLabel();
+			String imageURL = images[0].getURL();
+			URL url;
+
+			try {
+				url = new URL(imageURL);
+				BufferedImage artistImage = ImageIO
+						.read(url);
+				label.setIcon(new ImageIcon(artistImage));
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			} catch (NullPointerException e2) {
+				label.setIcon(new ImageIcon(
+						"defaultImage.jpg"));
+			}
+			imagePanel.add(label);
+		//}
+
+		artistPanel.add(imagePanel);
+		artistPanel.add(reviewPanel);
+
+		container.add(artistPanel, BorderLayout.CENTER);
+		container.revalidate();
+	}
 }
