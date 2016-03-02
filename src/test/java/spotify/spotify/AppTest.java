@@ -39,4 +39,20 @@ public class AppTest{
 		
 		Assert.assertNotNull(obj);
 	}
+	
+	@Test
+	public void testImages() throws IOException{
+		Retrofit retrofit = new Retrofit.Builder().baseUrl("http://developer.echonest.com/api/v4/")
+				.addConverterFactory(GsonConverterFactory.create()).build();
+		SpotifyService service = retrofit.create(SpotifyService.class);
+		Call<SongObject> call = service.searchSong("lighthouse", "anthem lights");
+		
+		Response<SongObject> response = call.execute();
+		
+		SongObject obj = response.body();
+		String releaseImg = obj.getSongs()[0].getTracks()[0].getRelease_image();
+		
+		Assert.assertSame("http://artwork-cdn.7static.com/static/img/sleeveart/00/012/348/0001234850_200.jpg", releaseImg);
+	}
+	
 }

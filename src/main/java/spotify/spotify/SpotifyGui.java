@@ -6,8 +6,10 @@ import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -32,7 +34,7 @@ public class SpotifyGui extends JFrame {
 	private ImageIcon trackImage, defaultImage;
 	private JTextField titleSearch, artistSearch;
 	private JButton searchButton;
-	
+
 	private Color spotifyGreen; // #638c00
 
 	public SpotifyGui() {
@@ -61,7 +63,7 @@ public class SpotifyGui extends JFrame {
 		songLbl = new JLabel("song");
 		artistLbl = new JLabel("artist");
 		imageLbl = new JLabel();
-		//image.setSize(200, 200);
+		// image.setSize(200, 200);
 		songLbl.setBorder(new LineBorder(Color.BLACK));
 		artistLbl.setBorder(new LineBorder(Color.BLACK));
 		imageLbl.setBorder(new LineBorder(Color.BLACK));
@@ -75,26 +77,24 @@ public class SpotifyGui extends JFrame {
 		searchPanel.setBackground(Color.BLACK);
 		titleSearch = new JTextField("search song title                 ");
 		artistSearch = new JTextField("search song artist               ");
-		
-		//clear search textFields on click
+
+		// clear search textFields on click
 		titleSearch.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e){
+			public void mouseClicked(MouseEvent e) {
 				titleSearch.setText(" ");
 			}
-			
-			
+
 		});
 
 		artistSearch.addMouseListener(new MouseAdapter() {
 
 			@Override
-			public void mouseClicked(MouseEvent e){
+			public void mouseClicked(MouseEvent e) {
 				artistSearch.setText(" ");
 			}
-			
-			
+
 		});
 
 		searchButton = new JButton("SEARCH");
@@ -114,35 +114,40 @@ public class SpotifyGui extends JFrame {
 
 				// search song and get artist.
 
-				Retrofit retrofit = new Retrofit.Builder().baseUrl("http://developer.echonest.com/api/v4/")
-						.addConverterFactory(GsonConverterFactory.create()).build();
+				Retrofit retrofit = new Retrofit.Builder()
+						.baseUrl("http://developer.echonest.com/api/v4/")
+						.addConverterFactory(GsonConverterFactory.create())
+						.build();
 				SpotifyService service = retrofit.create(SpotifyService.class);
-				Call<SongObject> call = service.searchSong(titleSearch.getText(), artistSearch.getText());
+				Call<SongObject> call = service.searchSong(
+						titleSearch.getText(), artistSearch.getText());
 
 				Response<SongObject> response;
 
 				try {
 					response = call.execute();
 					SongObject obj = response.body();
-					
+
 					Song[] songs = obj.getSongs();
 					Song song = songs[0];
 					songLbl.setText(song.getTitle());
 					artistLbl.setText(song.getArtist());
-					
-					try{
-					Track[] tracks = songs[0].getTracks();
-					String imageURL = tracks[0].getRelease_image();
-					trackImage = new ImageIcon(imageURL);
-					imageLbl.setIcon(trackImage);
-					
-					//IMAGE IS NOT SETTING YET
-					
-					} catch (ArrayIndexOutOfBoundsException e){
-						imageLbl.setText("image unavailable");
-						//imageLbl.setIcon(defaultImage);
-						
-						//IMAGE IS NOT SETTING YET
+
+					try {
+						Track[] tracks = songs[0].getTracks();
+						String imageURL = tracks[0].getRelease_image();
+						//trackImage = new ImageIcon(imageURL);
+						URL track = new URL(imageURL);
+						BufferedImage trackImage = ImageIO.read(track);
+						imageLbl.setIcon(new ImageIcon(trackImage));
+
+						// IMAGE IS NOT SETTING YET
+
+					} catch (ArrayIndexOutOfBoundsException e) {
+						//imageLbl.setText("image unavailable");
+						imageLbl.setIcon(new ImageIcon("defaultImage.jpg"));
+
+						// IMAGE IS NOT SETTING YET
 					}
 
 				} catch (ArrayIndexOutOfBoundsException e) {
@@ -158,26 +163,19 @@ public class SpotifyGui extends JFrame {
 			}
 
 		});
-		
-		
-		//RIGHT - 
-		
+
+		// RIGHT -
+
 		eastPanel = new JPanel();
 		eastPanel.setBackground(spotifyGreen);
 		eastPanel.setBorder(new LineBorder(Color.BLACK));
 		container.add(eastPanel, BorderLayout.EAST);
-		
-		
-		//LEFT - 
+
+		// LEFT -
 		westPanel = new JPanel();
 		westPanel.setBackground(spotifyGreen);
 		westPanel.setBorder(new LineBorder(Color.BLACK));
 		container.add(westPanel, BorderLayout.WEST);
-		
-		
-		
-		
-		
 
 	} // end GUI
 
