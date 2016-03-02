@@ -62,6 +62,10 @@ public class SpotifyGui extends JFrame {
 
 		spotifyGreen = Color.decode("#638c00");
 
+		JLabel defaultImage = new JLabel(new ImageIcon("bigspotify.png"));
+		container.add(defaultImage, BorderLayout.CENTER);
+		container.setBackground(spotifyGreen);
+
 		// NORTH - search
 		searchPanel = new JPanel();
 		searchPanel.setBackground(Color.BLACK);
@@ -148,10 +152,6 @@ public class SpotifyGui extends JFrame {
 		container.add(westPanel, BorderLayout.WEST);
 
 		// DEFAULT CENTER
-		JLabel defaultImage = new JLabel(new ImageIcon("bigspotify.png"));
-		container.add(defaultImage, BorderLayout.CENTER);
-		container.setBackground(spotifyGreen);
-
 	}// end GUI
 
 	public static void main(String[] args) {
@@ -218,6 +218,7 @@ public class SpotifyGui extends JFrame {
 		container.add(songs, BorderLayout.CENTER);
 		SongThread thread = new SongThread(title, artist, songs);
 		thread.start();
+		container.revalidate();
 	}
 
 	private void setSongInfo(Song song) {
