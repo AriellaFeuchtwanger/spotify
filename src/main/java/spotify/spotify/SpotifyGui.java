@@ -122,26 +122,14 @@ public class SpotifyGui extends JFrame {
 					container.add(artists, BorderLayout.CENTER);
 					new ArtistThread(artists, artist).start();
 				} else {
-
+					if (artist.equals("")
+							|| artist
+									.equals("search song artist               ")) {
+						artist = null;
+					}
 					// CENTER - track
-					Font font = new Font("Times New Roman", Font.PLAIN, 18);
-					trackPanel = new JPanel(new BorderLayout());
-					trackPanel.setBorder(new LineBorder(Color.BLACK));
-					trackPanel.setBackground(spotifyGreen);
-					songLbl = new JLabel("song");
-					songLbl.setFont(font);
-					artistLbl = new JLabel("artist");
-					artistLbl.setFont(font);
-					imageLbl = new JLabel(new ImageIcon("defaultImage.jpg"));
-					songLbl.setBorder(new LineBorder(Color.BLACK));
-					artistLbl.setBorder(new LineBorder(Color.BLACK));
-					trackPanel.add(songLbl, BorderLayout.SOUTH);
-					trackPanel.add(artistLbl, BorderLayout.NORTH);
-					trackPanel.add(imageLbl, BorderLayout.CENTER);
-					container.add(trackPanel, BorderLayout.CENTER);
-					SongThread thread = new SongThread(title, artist, songLbl,
-							artistLbl, imageLbl);
-					thread.start();
+					setUpTrack(title, artist);
+
 				}
 			}
 		});
@@ -171,49 +159,100 @@ public class SpotifyGui extends JFrame {
 		gui.setVisible(true);
 	}
 
-	private void setArtistInfo(Artist artist){
+	private void setArtistInfo(Artist artist) {
 		JPanel artistPanel = new JPanel();
 
 		JPanel reviewPanel = new JPanel();
-		reviewPanel.setLayout(new BoxLayout(
-				reviewPanel, BoxLayout.Y_AXIS));
+		reviewPanel.setLayout(new BoxLayout(reviewPanel, BoxLayout.Y_AXIS));
 		ArtistReview[] reviews = artist.getReviews();
 
 		for (ArtistReview review : reviews) {
-			reviewPanel.add(new JLabel(review
-					.getSummary()));
+			reviewPanel.add(new JLabel(review.getSummary()));
 		}
 
 		JPanel imagePanel = new JPanel();
-		imagePanel.setLayout(new BoxLayout(imagePanel,
-				BoxLayout.X_AXIS));
+		imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.X_AXIS));
 
 		ArtistImage[] images = artist.getImages();
-		
-		//for (int i = 0; i < 5; i++) {
-			JLabel label = new JLabel();
-			String imageURL = images[0].getURL();
-			URL url;
 
-			try {
-				url = new URL(imageURL);
-				BufferedImage artistImage = ImageIO
-						.read(url);
-				label.setIcon(new ImageIcon(artistImage));
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			} catch (NullPointerException e2) {
-				label.setIcon(new ImageIcon(
-						"defaultImage.jpg"));
-			}
-			imagePanel.add(label);
-		//}
+		// for (int i = 0; i < 5; i++) {
+		JLabel label = new JLabel();
+		String imageURL = images[0].getURL();
+		URL url;
+
+		try {
+			url = new URL(imageURL);
+			BufferedImage artistImage = ImageIO.read(url);
+			label.setIcon(new ImageIcon(artistImage));
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		} catch (NullPointerException e2) {
+			label.setIcon(new ImageIcon("defaultImage.jpg"));
+		}
+		imagePanel.add(label);
+		// }
 
 		artistPanel.add(imagePanel);
 		artistPanel.add(reviewPanel);
 
 		container.add(artistPanel, BorderLayout.CENTER);
+		container.revalidate();
+	}
+
+	private void setUpTrack(String title, String artist) {
+
+		JList<Song> songs = new JList<Song>();
+
+		songs.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+
+					Song song = songs.getSelectedValue();
+					setSongInfo(song);
+				}
+			}
+		});
+		container.add(songs, BorderLayout.CENTER);
+		SongThread thread = new SongThread(title, artist, songs);
+		thread.start();
+	}
+
+	private void setSongInfo(Song song) {
+		Font font = new Font("Times New Roman", Font.PLAIN, 18);
+		trackPanel = new JPanel(new BorderLayout());
+		trackPanel.setBorder(new LineBorder(Color.BLACK));
+		trackPanel.setBackground(spotifyGreen);
+		songLbl = new JLabel("song");
+		songLbl.setFont(font);
+		artistLbl = new JLabel("artist");
+		artistLbl.setFont(font);
+		imageLbl = new JLabel(new ImageIcon("defaultImage.jpg"));
+		songLbl.setBorder(new LineBorder(Color.BLACK));
+		artistLbl.setBorder(new LineBorder(Color.BLACK));
+		trackPanel.add(songLbl, BorderLayout.SOUTH);
+		trackPanel.add(artistLbl, BorderLayout.NORTH);
+		trackPanel.add(imageLbl, BorderLayout.CENTER);
+		container.add(trackPanel, BorderLayout.CENTER);
+		songLbl.setText(song.getTitle());
+		artistLbl.setText(song.getArtist());
+
+		Track[] tracks = song.getTracks();
+		if (tracks.length > 0) {
+			String imageURL = tracks[0].getRelease_image();
+			URL track;
+			try {
+				track = new URL(imageURL);
+				BufferedImage trackImage = ImageIO.read(track);
+				imageLbl.setIcon(new ImageIcon(trackImage));
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		container.revalidate();
 	}
 }

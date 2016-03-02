@@ -21,4 +21,8 @@ public class Song {
 	public String getArtistId(){
 		return artist_id;
 	}
+	
+	public String toString(){
+		return title + " - " + artist_name;
+	}
 }
