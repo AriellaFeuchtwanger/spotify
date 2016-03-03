@@ -61,116 +61,42 @@ public class SpotifyGui extends JFrame {
 
 		spotifyGreen = Color.decode("#638c00");
 
-		// DEFAULT CENTER
-
-		// DEFAULT CENTER
-
 		JLabel defaultImage = new JLabel(new ImageIcon("bigspotify.png"));
 		container.add(defaultImage, BorderLayout.CENTER);
 		container.setBackground(spotifyGreen);
 		currCenter = defaultImage;
 
 		// WEST - recent searches
-		westPanel = new JPanel();
-		westPanel.setBackground(spotifyGreen);
-		westPanel.setBorder(new LineBorder(Color.BLACK));
-		recentModel = new DefaultListModel<String>();
-		recentList = new JList<String>(recentModel);
-		recentList.setBackground(spotifyGreen);
-		recentModel.addElement("RECENT SEARCHES");
-		recentList.setFixedCellWidth(150);
-		westPanel.add(recentList);
-		container.add(westPanel, BorderLayout.WEST);
+		setUpWest();
 
 		// EAST - more songs from artist
-		eastPanel = new JPanel();
-		eastPanel.setBackground(spotifyGreen);
-		eastPanel.setBorder(new LineBorder(Color.BLACK));
-		eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
-		similar = new JList<Artist>();
-		similar.setFixedCellWidth(150);
-		similar.setBackground(spotifyGreen);
-		eastPanel.add(new JLabel("Similar"));
-		eastPanel.add(similar);
-		container.add(eastPanel, BorderLayout.EAST);
-
-		// NORTH - search
-		searchPanel = new JPanel();
-		searchPanel.setBackground(Color.BLACK);
-		titleSearch = new JTextField("search song title                 ");
-		artistSearch = new JTextField("search song artist               ");
-
-		titleSearch.setPreferredSize(new Dimension(200, 25));
-		artistSearch.setPreferredSize(new Dimension(200, 25));
-		titleSearch.setMaximumSize(new Dimension(400, 25));
-		artistSearch.setMaximumSize(new Dimension(400, 25));
-		// clear search textFields on click
-		titleSearch.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				titleSearch.setText(null);
-			}
-
-		});
-
-		artistSearch.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				artistSearch.setText(null);
-			}
-
-		});
-
-		searchButton = new JButton("SEARCH");
-		searchButton.setBackground(spotifyGreen);
-
-		searchPanel.add(titleSearch);
-		searchPanel.add(artistSearch);
-		searchPanel.add(searchButton);
-		container.add(searchPanel, BorderLayout.NORTH);
-
-		searchButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				String title = titleSearch.getText();
-				String artist = artistSearch.getText();
-
-				if (title.equals("") || title.equals("search song title                 ")) {
-					artists = new JList<Artist>();
-					artists.setBackground(spotifyGreen);
-					artists.addMouseListener(new MouseAdapter() {
-
-						@Override
-						public void mouseClicked(MouseEvent e) {
-							if (e.getClickCount() == 2) {
-								Artist artist = artists.getSelectedValue();
-								recentModel.addElement(artist.toString());
-								setArtistInfo(artist);
-							}
-						}
-					});
-					
-					resetContainer(artists);
-					currCenter = artists;
-					new ArtistThread(artists, artist).start();
-					new SimilarArtistThread(similar, artist).start();
-				} else {
-					if (artist.equals("") || artist.equals("search song artist               ")) {
-						artist = null;
-
-					}
-					// CENTER - track
-					setUpTrack(title, artist);
-
-				}
-			}
-		});
+		setUpEast();
+		
+		setUpNorth();
 
 	}// end GUI
 
+	private void searchArtists(String artist){
+		artists = new JList<Artist>();
+		artists.setBackground(spotifyGreen);
+		artists.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					Artist artist = artists.getSelectedValue();
+					recentModel.addElement(artist.toString());
+					setArtistInfo(artist);
+				}
+			}
+		});
+		
+		resetContainer(artists);
+		currCenter = artists;
+		new ArtistThread(artists, artist).start();
+		new SimilarArtistThread(similar, artist).start();
+	}
+	
 	private void setArtistInfo(Artist artist) {
 		JPanel artistPanel = new JPanel();
 
@@ -215,7 +141,7 @@ public class SpotifyGui extends JFrame {
 	}
 
 	private void setUpTrack(String title, String artist) {
-
+		
 		JList<Song> songs = new JList<Song>();
 		songs.setBackground(spotifyGreen);
 		songs.addMouseListener(new MouseAdapter() {
@@ -270,11 +196,6 @@ public class SpotifyGui extends JFrame {
 				e.printStackTrace();
 			}
 		}
-
-		// container.add(trackPanel, BorderLayout.CENTER);
-
-		// container.add(trackPanel, BorderLayout.CENTER);
-
 		resetContainer(trackPanel);
 		currCenter = trackPanel;
 		container.revalidate();
@@ -283,6 +204,105 @@ public class SpotifyGui extends JFrame {
 	private void resetContainer(Component c) {
 		container.remove(currCenter);
 		container.add(c, BorderLayout.CENTER);
+	}
+
+	private void setUpEast() {
+		eastPanel = new JPanel();
+		eastPanel.setBackground(spotifyGreen);
+		eastPanel.setBorder(new LineBorder(Color.BLACK));
+		eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
+		similar = new JList<Artist>();
+		similar.setFixedCellWidth(150);
+		similar.setBackground(spotifyGreen);
+		similar.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					Artist artist = similar.getSelectedValue();
+					searchArtists(artist.getName());
+				}
+			}
+		});
+		eastPanel.add(new JLabel("Similar"));
+		eastPanel.add(similar);
+		container.add(eastPanel, BorderLayout.EAST);
+	}
+
+	private void setUpWest() {
+		westPanel = new JPanel();
+		westPanel.setBackground(spotifyGreen);
+		westPanel.setBorder(new LineBorder(Color.BLACK));
+		recentModel = new DefaultListModel<String>();
+		recentList = new JList<String>(recentModel);
+		recentList.setBackground(spotifyGreen);
+		recentModel.addElement("RECENT SEARCHES");
+		recentList.setFixedCellWidth(150);
+		westPanel.add(recentList);
+		container.add(westPanel, BorderLayout.WEST);
+	}
+
+	private void setUpNorth() {
+		// NORTH - search
+		searchPanel = new JPanel();
+		searchPanel.setBackground(Color.BLACK);
+		titleSearch = new JTextField("search song title                 ");
+		artistSearch = new JTextField("search song artist               ");
+
+		titleSearch.setPreferredSize(new Dimension(200, 25));
+		artistSearch.setPreferredSize(new Dimension(200, 25));
+		titleSearch.setMaximumSize(new Dimension(400, 25));
+		artistSearch.setMaximumSize(new Dimension(400, 25));
+		// clear search textFields on click
+		titleSearch.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				titleSearch.setText(null);
+			}
+
+		});
+
+		artistSearch.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				artistSearch.setText(null);
+			}
+
+		});
+
+		searchButton = new JButton("SEARCH");
+		searchButton.setBackground(spotifyGreen);
+
+		searchPanel.add(titleSearch);
+		searchPanel.add(artistSearch);
+		searchPanel.add(searchButton);
+		container.add(searchPanel, BorderLayout.NORTH);
+
+		searchButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				String title = titleSearch.getText();
+				String artist = artistSearch.getText();
+
+				if (title.equals("")
+						|| title.equals("search song title                 ")) {
+					searchArtists(artist);
+				} else {
+					if (artist.equals("")
+							|| artist
+									.equals("search song artist               ")) {
+						artist = null;
+
+					}
+					// CENTER - track
+					setUpTrack(title, artist);
+
+				}
+			}
+		});
 	}
 
 	public static void main(String[] args) {
