@@ -9,7 +9,11 @@ public interface SpotifyService {
 
 	@GET("artist/search?api_key=VMDU6RQBYQKV6N0RR&format=json&bucket=id:7digital-US&bucket=images&bucket=artist_location&bucket=reviews")
 	Call<ArtistObject> searchArtist(@Query("name") String name);
-	
+
 	@GET("song/search?api_key=VMDU6RQBYQKV6N0RR&format=json&&bucket=id:7digital-US&bucket=tracks")
-	Call<SongObject> searchSong(@Query("title") String title, @Query("artist") String artist);
+	Call<SongObject> searchSong(@Query("title") String title,
+			@Query("artist") String artist);
+
+	@GET("artist/similar?api_key=VMDU6RQBYQKV6N0RR&format=json")
+	Call<SimilarArtists> getSimilar(@Query("name") String name);
 }

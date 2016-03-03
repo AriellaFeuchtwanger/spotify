@@ -35,6 +35,7 @@ public class SpotifyGui extends JFrame {
 	private JLabel songLbl, artistLbl, imageLbl;
 	private JList<Artist> artists;
 	private JList<String> recentList;
+	private JList<Artist> similar;
 	private DefaultListModel<String> recentModel;
 	private JTextField titleSearch, artistSearch;
 	private JButton searchButton;
@@ -85,6 +86,12 @@ public class SpotifyGui extends JFrame {
 		eastPanel = new JPanel();
 		eastPanel.setBackground(spotifyGreen);
 		eastPanel.setBorder(new LineBorder(Color.BLACK));
+		eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
+		similar = new JList<Artist>();
+		similar.setFixedCellWidth(150);
+		similar.setBackground(spotifyGreen);
+		eastPanel.add(new JLabel("Similar"));
+		eastPanel.add(similar);
 		container.add(eastPanel, BorderLayout.EAST);
 
 		// NORTH - search
@@ -147,13 +154,9 @@ public class SpotifyGui extends JFrame {
 					});
 					
 					resetContainer(artists);
-
-					// container.add(artists, BorderLayout.CENTER);
-
-					// container.add(artists, BorderLayout.CENTER);
-
 					currCenter = artists;
 					new ArtistThread(artists, artist).start();
+					new SimilarArtistThread(similar, artist).start();
 				} else {
 					if (artist.equals("") || artist.equals("search song artist               ")) {
 						artist = null;
