@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +24,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
 
@@ -75,6 +77,7 @@ public class SpotifyGui extends JFrame {
 		recentList = new JList<String>(recentModel);
 		recentList.setBackground(spotifyGreen);
 		recentModel.addElement("RECENT SEARCHES");
+		recentList.setFixedCellWidth(150);
 		westPanel.add(recentList);
 		container.add(westPanel, BorderLayout.WEST);
 
@@ -90,6 +93,10 @@ public class SpotifyGui extends JFrame {
 		titleSearch = new JTextField("search song title                 ");
 		artistSearch = new JTextField("search song artist               ");
 
+		titleSearch.setPreferredSize(new Dimension(200, 25));
+		artistSearch.setPreferredSize(new Dimension(200, 25));
+		titleSearch.setMaximumSize(new Dimension(400, 25));
+		artistSearch.setMaximumSize(new Dimension(400, 25));
 		// clear search textFields on click
 		titleSearch.addMouseListener(new MouseAdapter() {
 
@@ -138,6 +145,7 @@ public class SpotifyGui extends JFrame {
 							}
 						}
 					});
+					
 					resetContainer(artists);
 
 					// container.add(artists, BorderLayout.CENTER);
