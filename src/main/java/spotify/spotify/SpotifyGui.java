@@ -18,6 +18,7 @@ import java.net.URL;
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
+import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -207,28 +208,28 @@ public class SpotifyGui extends JFrame {
 		eastPanel.setBackground(spotifyGreen);
 		eastPanel.setBorder(new LineBorder(Color.BLACK));
 		eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.Y_AXIS));
-		// similar = new JList<Artist>();
-		// similar.setFixedCellWidth(150);
-		// similar.setBackground(spotifyGreen);
-		// similar.addMouseListener(new MouseAdapter() {
+		similar = new JList<Artist>();
+		similar.setFixedCellWidth(150);
+		similar.setBackground(spotifyGreen);
+		similar.addMouseListener(new MouseAdapter() {
 
-		// @Override
-		// public void mouseClicked(MouseEvent e) {
-		// if (e.getClickCount() == 2) {
-		// Artist artist = similar.getSelectedValue();
-		// searchArtists(artist.getName());
-		// }
-		// }
-		// });
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					Artist artist = similar.getSelectedValue();
+					searchArtists(artist.getName());
+				}
+			}
+		});
 
-		moreSongsModel = new DefaultListModel<String>();
-		moreSongsList = new JList<String>(moreSongsModel);
+		// moreSongsModel = new DefaultListModel<String>();
+		// moreSongsList = new JList<String>(moreSongsModel);
 
-		eastPanel.add(new JLabel("More songs by artist:"));
-		eastPanel.add(moreSongsList);
+		// eastPanel.add(new JLabel("More songs by artist:"));
+		// eastPanel.add(moreSongsList);
 
-		// eastPanel.add(new JLabel("Similar"));
-		// eastPanel.add(similar);
+		eastPanel.add(new JLabel("SIMILAR ARTISTS"));
+		eastPanel.add(similar);
 		container.add(eastPanel, BorderLayout.EAST);
 	}
 
@@ -249,7 +250,7 @@ public class SpotifyGui extends JFrame {
 		recentModel = new DefaultListModel<String>();
 		recentList = new JList<String>(recentModel);
 		recentList.setBackground(spotifyGreen);
-		recentModel.addElement("RECENT SONGS");
+		recentModel.addElement("RECENT SEARCHES");
 		recentList.setFixedCellWidth(150);
 		westPanel.add(recentList);
 		container.add(westPanel, BorderLayout.WEST);
