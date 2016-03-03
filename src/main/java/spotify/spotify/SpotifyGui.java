@@ -57,17 +57,15 @@ public class SpotifyGui extends JFrame {
 		}
 
 		spotifyGreen = Color.decode("#638c00");
-<<<<<<< HEAD
 
 		// DEFAULT CENTER
-=======
-		//DEFAULT CENTER
->>>>>>> 26de7ded0977ca440278adf433e13a8da6e1986f
+
+		// DEFAULT CENTER
+
 		JLabel defaultImage = new JLabel(new ImageIcon("bigspotify.png"));
 		container.add(defaultImage, BorderLayout.CENTER);
 		container.setBackground(spotifyGreen);
 		currCenter = defaultImage;
-<<<<<<< HEAD
 
 		// WEST - recent searches
 		westPanel = new JPanel();
@@ -85,8 +83,6 @@ public class SpotifyGui extends JFrame {
 		eastPanel.setBackground(spotifyGreen);
 		eastPanel.setBorder(new LineBorder(Color.BLACK));
 		container.add(eastPanel, BorderLayout.EAST);
-=======
->>>>>>> 26de7ded0977ca440278adf433e13a8da6e1986f
 
 		// NORTH - search
 		searchPanel = new JPanel();
@@ -143,11 +139,11 @@ public class SpotifyGui extends JFrame {
 						}
 					});
 					resetContainer(artists);
-<<<<<<< HEAD
+
 					// container.add(artists, BorderLayout.CENTER);
-=======
-					//container.add(artists, BorderLayout.CENTER);
->>>>>>> 26de7ded0977ca440278adf433e13a8da6e1986f
+
+					// container.add(artists, BorderLayout.CENTER);
+
 					currCenter = artists;
 					new ArtistThread(artists, artist).start();
 				} else {
@@ -204,11 +200,7 @@ public class SpotifyGui extends JFrame {
 		resetContainer(artistPanel);
 		currCenter = artistPanel;
 		container.revalidate();
-<<<<<<< HEAD
 
-=======
-		
->>>>>>> 26de7ded0977ca440278adf433e13a8da6e1986f
 	}
 
 	private void setUpTrack(String title, String artist) {
@@ -250,11 +242,7 @@ public class SpotifyGui extends JFrame {
 		trackPanel.add(songLbl, BorderLayout.SOUTH);
 		trackPanel.add(artistLbl, BorderLayout.NORTH);
 		trackPanel.add(imageLbl, BorderLayout.CENTER);
-<<<<<<< HEAD
 
-=======
-		
->>>>>>> 26de7ded0977ca440278adf433e13a8da6e1986f
 		songLbl.setText(song.getTitle());
 		artistLbl.setText(song.getArtist());
 
@@ -271,16 +259,15 @@ public class SpotifyGui extends JFrame {
 				e.printStackTrace();
 			}
 		}
-<<<<<<< HEAD
+
 		// container.add(trackPanel, BorderLayout.CENTER);
-=======
-		//container.add(trackPanel, BorderLayout.CENTER);
->>>>>>> 26de7ded0977ca440278adf433e13a8da6e1986f
+
+		// container.add(trackPanel, BorderLayout.CENTER);
+
 		resetContainer(trackPanel);
 		currCenter = trackPanel;
 		container.revalidate();
 	}
-<<<<<<< HEAD
 
 	private void resetContainer(Component c) {
 		container.remove(currCenter);
@@ -291,11 +278,5 @@ public class SpotifyGui extends JFrame {
 		SpotifyGui gui = new SpotifyGui();
 		gui.setVisible(true);
 	}
-=======
-	
-	private void resetContainer(Component c){
-		container.remove(currCenter);
-		container.add(c, BorderLayout.CENTER);
-	}
->>>>>>> 26de7ded0977ca440278adf433e13a8da6e1986f
+
 }
