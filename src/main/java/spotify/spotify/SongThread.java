@@ -20,6 +20,7 @@ public class SongThread extends Thread{
 	private String title;
 	private String artist;
 	private JList<Song> songList;
+	private JList<Song> similar;
 	
 	/*
 	public SongThread(String title, String artist, JLabel songLbl,
@@ -33,10 +34,11 @@ public class SongThread extends Thread{
 	}
 	*/
 
-	public SongThread(String title, String artist, JList<Song> songs) {
+	public SongThread(String title, String artist, JList<Song> songs, JList<Song> similar) {
 		this.title = title;
 		this.artist = artist;
 		this.songList = songs;
+		this.similar = similar;
 	}
 
 	public void run(){
@@ -57,5 +59,18 @@ public class SongThread extends Thread{
 		Song[] songs = obj.getSongs();
 		//Song song = songs[0];
 		songList.setListData(songs);
+		
+		call = service.getSimilarSongs(songs[0].getArtist());
+		
+		try {
+			response = call.execute();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		obj = response.body();
+		songs = obj.getSongs();
+		similar.setListData(songs);
 	}
 }

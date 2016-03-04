@@ -35,6 +35,7 @@ public class SpotifyGui extends JFrame {
 	private JLabel songLbl, artistLbl, imageLbl;
 	private JList<Artist> artists, similar;
 	private JList<String> recentList, moreSongsList;
+	private JList<Song> artistSongs;
 	private DefaultListModel<String> recentModel, moreSongsModel;
 	private JTextField titleSearch, artistSearch;
 	private JButton searchButton;
@@ -96,49 +97,37 @@ public class SpotifyGui extends JFrame {
 
 	private void setArtistInfo(Artist artist) {
 		JPanel artistPanel = new JPanel();
+		artistPanel.setBackground(spotifyGreen);
+		
+		JLabel artistName = new JLabel(artist.getName());
+		artistName.setBackground(spotifyGreen);
+		
+		artistSongs = new JList<Song>();
+		artistSongs.setBackground(spotifyGreen);
+		artistSongs.setFixedCellWidth(450);
+		artistSongs.addMouseListener(new MouseAdapter() {
 
-		JPanel reviewPanel = new JPanel();
-		reviewPanel.setLayout(new BoxLayout(reviewPanel, BoxLayout.Y_AXIS));
-		ArtistReview[] reviews = artist.getReviews();
-
-		for (ArtistReview review : reviews) {
-			reviewPanel.add(new JLabel(review.getSummary()));
-		}
-
-		JPanel imagePanel = new JPanel();
-		imagePanel.setLayout(new BoxLayout(imagePanel, BoxLayout.X_AXIS));
-
-		ArtistImage[] images = artist.getImages();
-
-		// for (int i = 0; i < 5; i++) {
-		JLabel label = new JLabel();
-		String imageURL = images[0].getURL();
-		URL url;
-
-		try {
-			url = new URL(imageURL);
-			BufferedImage artistImage = ImageIO.read(url);
-			label.setIcon(new ImageIcon(artistImage));
-		} catch (IOException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		} catch (NullPointerException e2) {
-			label.setIcon(new ImageIcon("defaultImage.jpg"));
-		}
-		imagePanel.add(label);
-		// }
-
-		artistPanel.add(imagePanel);
-		artistPanel.add(reviewPanel);
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					Song song = artistSongs.getSelectedValue();
+					setUpTrack(song.getTitle(), song.getArtist());
+				}
+			}
+		});
+		new ArtistSongsThread(artistSongs, artist.getName()).start();
+		
+		artistPanel.add(artistName);
+		artistPanel.add(artistSongs);
 
 		resetContainer(artistPanel);
 		currCenter = artistPanel;
 		container.revalidate();
+		
 
 	}
 
 	private void setUpTrack(String title, String artist) {
-
 		JList<Song> songs = new JList<Song>();
 		songs.setBackground(spotifyGreen);
 		songs.addMouseListener(new MouseAdapter() {
@@ -156,7 +145,8 @@ public class SpotifyGui extends JFrame {
 		});
 		resetContainer(songs);
 		currCenter = songs;
-		SongThread thread = new SongThread(title, artist, songs);
+		JList<Song> similar = new JList<Song>();
+		SongThread thread = new SongThread(title, artist, songs, similar);
 		thread.start();
 		container.revalidate();
 	}
@@ -301,10 +291,13 @@ public class SpotifyGui extends JFrame {
 				String title = titleSearch.getText();
 				String artist = artistSearch.getText();
 
-				if (title.equals("") || title.equals("search song title                 ")) {
+				if (title.equals("")
+						|| title.equals("search song title                 ")) {
 					searchArtists(artist);
 				} else {
-					if (artist.equals("") || artist.equals("search song artist               ")) {
+					if (artist.equals("")
+							|| artist
+									.equals("search song artist               ")) {
 						artist = null;
 
 					}
