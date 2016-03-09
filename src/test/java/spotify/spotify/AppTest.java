@@ -1,9 +1,12 @@
 package spotify.spotify;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 
 import org.junit.Assert;
 import org.junit.Test;
+
+import com.google.gson.Gson;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -41,21 +44,6 @@ public class AppTest{
 	}
 	
 	@Test
-	public void testImages() throws IOException{
-		Retrofit retrofit = new Retrofit.Builder().baseUrl("http://developer.echonest.com/api/v4/")
-				.addConverterFactory(GsonConverterFactory.create()).build();
-		SpotifyService service = retrofit.create(SpotifyService.class);
-		Call<SongObject> call = service.searchSong("lighthouse", "anthem lights");
-		
-		Response<SongObject> response = call.execute();
-		
-		SongObject obj = response.body();
-		String releaseImg = obj.getSongs()[0].getTracks()[0].getRelease_image();
-		
-		Assert.assertSame("http://artwork-cdn.7static.com/static/img/sleeveart/00/012/348/0001234850_200.jpg", releaseImg);
-	}
-	
-	@Test
 	public void testSimilar() throws IOException{
 		Retrofit retrofit = new Retrofit.Builder().baseUrl("http://developer.echonest.com/api/v4/")
 				.addConverterFactory(GsonConverterFactory.create()).build();
@@ -71,7 +59,17 @@ public class AppTest{
 	
 	@Test
 	public void testResults() throws IOException{
+		Retrofit retrofit = new Retrofit.Builder().baseUrl("https://itunes.apple.com/")
+				.addConverterFactory(GsonConverterFactory.create()).build();
+		ItunesService service = retrofit.create(ItunesService.class);
+		String term = URLEncoder.encode("anthem lights just fall", "UTF-8");
+		Call<ItunesObject> call = service.searchSongPreview(term);
 		
+		Response<ItunesObject> response = call.execute();
+		
+		ItunesObject obj = response.body();
+		
+		Assert.assertNotNull(obj.getPreviewURL());
 	}
 	
 }
