@@ -15,6 +15,10 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
+
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
@@ -27,6 +31,11 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.LineBorder;
+
+import retrofit2.Call;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class SpotifyGui extends JFrame {
 
@@ -41,7 +50,7 @@ public class SpotifyGui extends JFrame {
 	private JButton searchButton;
 	private Container container;
 	private Component currCenter;
-
+	private MediaPlayer player;
 	private Color spotifyGreen; // #638c00
 
 	public SpotifyGui() {
@@ -98,10 +107,10 @@ public class SpotifyGui extends JFrame {
 	private void setArtistInfo(Artist artist) {
 		JPanel artistPanel = new JPanel();
 		artistPanel.setBackground(spotifyGreen);
-		
+
 		JLabel artistName = new JLabel(artist.getName());
 		artistName.setBackground(spotifyGreen);
-		
+
 		artistSongs = new JList<Song>();
 		artistSongs.setBackground(spotifyGreen);
 		artistSongs.setFixedCellWidth(450);
@@ -116,18 +125,17 @@ public class SpotifyGui extends JFrame {
 			}
 		});
 		new ArtistSongsThread(artistSongs, artist.getName()).start();
-		
+
 		artistPanel.add(artistName);
 		artistPanel.add(artistSongs);
 
 		resetContainer(artistPanel);
 		currCenter = artistPanel;
 		container.revalidate();
-		
 
 	}
 
-	//Set up the songs
+	// Set up the songs
 	private void setUpTrack(String title, String artist) {
 		JList<Song> songs = new JList<Song>();
 		songs.setBackground(spotifyGreen);
@@ -140,7 +148,31 @@ public class SpotifyGui extends JFrame {
 					Song song = songs.getSelectedValue();
 					setSongInfo(song);
 					recentModel.addElement(song.toString());
-					new ItunesThread(song.getArtist(), song.getTitle()).start();
+					//MediaPlayer player = null;
+					//new ItunesThread(song.getArtist(), song.getTitle()).start();
+					Retrofit retrofit = new Retrofit.Builder()
+					.baseUrl("https://itunes.apple.com/")
+					.addConverterFactory(GsonConverterFactory.create()).build();
+			ItunesService service = retrofit.create(ItunesService.class);
+			// String term = URLEncoder.encode("anthem lights just fall", "UTF-8");
+			String term = song.getArtist().toLowerCase() + " " + song.getTitle().toLowerCase();
+			Call<ItunesObject> call = service.searchSongPreview(term);
+
+			Response<ItunesObject> response = null;
+			try {
+				response = call.execute();
+			} catch (IOException ee) {
+				// TODO Auto-generated catch block
+				ee.printStackTrace();
+			}
+
+			ItunesObject obj = response.body();
+			String url = obj.getPreviewURL();
+			JFXPanel fxPanel = new JFXPanel();
+			Media song2 = new Media(url);
+			player = new MediaPlayer(song2);
+			// fxPanel.add(player);
+			player.play();
 				}
 			}
 		});
@@ -184,6 +216,7 @@ public class SpotifyGui extends JFrame {
 				e.printStackTrace();
 			}
 		}
+		
 		resetContainer(trackPanel);
 		currCenter = trackPanel;
 		container.revalidate();
