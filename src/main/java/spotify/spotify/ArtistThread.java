@@ -2,7 +2,6 @@ package spotify.spotify;
 
 import java.io.IOException;
 
-import javax.swing.JLabel;
 import javax.swing.JList;
 
 import retrofit2.Call;
@@ -14,15 +13,15 @@ public class ArtistThread extends Thread {
 	private ArtistObject artist;
 	private JList<Artist> artists;
 	private String name;
-	
+
 	public ArtistThread(JList<Artist> artists, String name) {
 		this.artists = artists;
 		this.name = name;
 	}
 
+	@Override
 	public void run() {
-		Retrofit retrofit = new Retrofit.Builder()
-				.baseUrl("http://developer.echonest.com/api/v4/")
+		Retrofit retrofit = new Retrofit.Builder().baseUrl("http://developer.echonest.com/api/v4/")
 				.addConverterFactory(GsonConverterFactory.create()).build();
 		SpotifyService service = retrofit.create(SpotifyService.class);
 		Call<ArtistObject> call = service.searchArtist(name);

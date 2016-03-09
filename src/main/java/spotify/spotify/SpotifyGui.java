@@ -15,14 +15,9 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-import javafx.embed.swing.JFXPanel;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
-
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -30,8 +25,12 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
 
+import javafx.embed.swing.JFXPanel;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import retrofit2.Call;
 import retrofit2.Response;
 import retrofit2.Retrofit;
@@ -43,9 +42,9 @@ public class SpotifyGui extends JFrame {
 	private JPanel searchPanel, trackPanel, westPanel, eastPanel;
 	private JLabel songLbl, artistLbl, imageLbl;
 	private JList<Artist> artists, similar;
-	private JList<String> recentList, moreSongsList;
+	private JList<String> recentList;
 	private JList<Song> artistSongs;
-	private DefaultListModel<String> recentModel, moreSongsModel;
+	private DefaultListModel<String> recentModel;
 	private JTextField titleSearch, artistSearch;
 	private JButton searchButton;
 	private Container container;
@@ -55,7 +54,7 @@ public class SpotifyGui extends JFrame {
 
 	public SpotifyGui() {
 		setTitle("Spotify");
-		setSize(800, 600);
+		setSize(750, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		container = getContentPane();
@@ -84,6 +83,7 @@ public class SpotifyGui extends JFrame {
 	private void searchArtists(String artist) {
 		artists = new JList<Artist>();
 		artists.setBackground(spotifyGreen);
+		artists.setForeground(Color.BLACK);
 		artists.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -91,7 +91,6 @@ public class SpotifyGui extends JFrame {
 				if (e.getClickCount() == 2) {
 					Artist artist = artists.getSelectedValue();
 					recentModel.addElement(artist.toString()); // add to recents
-					setArtistSongs(artist); // add to artist's other songs
 					setArtistInfo(artist);
 				}
 			}
@@ -113,6 +112,7 @@ public class SpotifyGui extends JFrame {
 
 		artistSongs = new JList<Song>();
 		artistSongs.setBackground(spotifyGreen);
+		artistSongs.setForeground(Color.BLACK);
 		artistSongs.setFixedCellWidth(450);
 		artistSongs.addMouseListener(new MouseAdapter() {
 
@@ -148,34 +148,36 @@ public class SpotifyGui extends JFrame {
 					Song song = songs.getSelectedValue();
 					setSongInfo(song);
 					recentModel.addElement(song.toString());
-					//MediaPlayer player = null;
-					//new ItunesThread(song.getArtist(), song.getTitle()).start();
-					Retrofit retrofit = new Retrofit.Builder()
-					.baseUrl("https://itunes.apple.com/")
-					.addConverterFactory(GsonConverterFactory.create()).build();
-			ItunesService service = retrofit.create(ItunesService.class);
-			// String term = URLEncoder.encode("anthem lights just fall", "UTF-8");
-			String term = song.getArtist().toLowerCase() + " " + song.getTitle().toLowerCase();
-			Call<ItunesObject> call = service.searchSongPreview(term);
+					// MediaPlayer player = null;
+					// new ItunesThread(song.getArtist(),
+					// song.getTitle()).start();
+					Retrofit retrofit = new Retrofit.Builder().baseUrl("https://itunes.apple.com/")
+							.addConverterFactory(GsonConverterFactory.create()).build();
+					ItunesService service = retrofit.create(ItunesService.class);
+					// String term = URLEncoder.encode("anthem lights just
+					// fall", "UTF-8");
+					String term = song.getArtist().toLowerCase() + " " + song.getTitle().toLowerCase();
+					Call<ItunesObject> call = service.searchSongPreview(term);
 
-			Response<ItunesObject> response = null;
-			try {
-				response = call.execute();
-			} catch (IOException ee) {
-				// TODO Auto-generated catch block
-				ee.printStackTrace();
-			}
+					Response<ItunesObject> response = null;
+					try {
+						response = call.execute();
+					} catch (IOException ee) {
+						// TODO Auto-generated catch block
+						ee.printStackTrace();
+					}
 
-			ItunesObject obj = response.body();
-			String url = obj.getPreviewURL();
-			JFXPanel fxPanel = new JFXPanel();
-			Media song2 = new Media(url);
-			player = new MediaPlayer(song2);
-			// fxPanel.add(player);
-			player.play();
+					ItunesObject obj = response.body();
+					String url = obj.getPreviewURL();
+					JFXPanel fxPanel = new JFXPanel();
+					Media song2 = new Media(url);
+					player = new MediaPlayer(song2);
+					// fxPanel.add(player);
+					player.play();
 				}
 			}
 		});
+
 		resetContainer(songs);
 		currCenter = songs;
 		JList<Song> similar = new JList<Song>();
@@ -191,8 +193,12 @@ public class SpotifyGui extends JFrame {
 		trackPanel.setBackground(spotifyGreen);
 		songLbl = new JLabel("song");
 		songLbl.setFont(font);
+		songLbl.setForeground(Color.BLACK);
+		songLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		artistLbl = new JLabel("artist");
 		artistLbl.setFont(font);
+		artistLbl.setForeground(Color.BLACK);
+		artistLbl.setHorizontalAlignment(SwingConstants.CENTER);
 		imageLbl = new JLabel(new ImageIcon("defaultImage.jpg"));
 		songLbl.setBorder(new LineBorder(Color.BLACK));
 		artistLbl.setBorder(new LineBorder(Color.BLACK));
@@ -216,7 +222,7 @@ public class SpotifyGui extends JFrame {
 				e.printStackTrace();
 			}
 		}
-		
+
 		resetContainer(trackPanel);
 		currCenter = trackPanel;
 		container.revalidate();
@@ -246,36 +252,25 @@ public class SpotifyGui extends JFrame {
 			}
 		});
 
-		// moreSongsModel = new DefaultListModel<String>();
-		// moreSongsList = new JList<String>(moreSongsModel);
-
-		// eastPanel.add(new JLabel("More songs by artist:"));
-		// eastPanel.add(moreSongsList);
-
-		eastPanel.add(new JLabel("SIMILAR ARTISTS"));
+		similar.setForeground(Color.BLACK);
+		// eastPanel.add(new JLabel("SIMILAR ARTISTS"));
+		eastPanel.add(new JLabel(new ImageIcon("similarArtists.png")));
 		eastPanel.add(similar);
 		container.add(eastPanel, BorderLayout.EAST);
-	}
-
-	private void setArtistSongs(Artist artist) {
-
-		// get more songs from artist
-		// http://developer.echonest.com/api/v4/song/search?api_key=FILDTEOIK2HBORODV&artist=artist
-		// set moreSongsModel with songs
-
-		// moreSongsModel.addElement();
-
 	}
 
 	private void setUpWest() {
 		westPanel = new JPanel();
 		westPanel.setBackground(spotifyGreen);
 		westPanel.setBorder(new LineBorder(Color.BLACK));
+		westPanel.setLayout(new BoxLayout(westPanel, BoxLayout.Y_AXIS));
 		recentModel = new DefaultListModel<String>();
 		recentList = new JList<String>(recentModel);
 		recentList.setBackground(spotifyGreen);
-		recentModel.addElement("RECENT SEARCHES");
+		recentList.setForeground(Color.BLACK);
+		// recentModel.addElement("RECENT SEARCHES");
 		recentList.setFixedCellWidth(150);
+		westPanel.add(new JLabel(new ImageIcon("recentSearches.png")));
 		westPanel.add(recentList);
 		container.add(westPanel, BorderLayout.WEST);
 	}
@@ -310,9 +305,11 @@ public class SpotifyGui extends JFrame {
 
 		});
 
-		searchButton = new JButton("SEARCH");
+		searchButton = new JButton("SEARCH ");
+		searchButton.setForeground(Color.WHITE);
+		searchButton.setIcon(new ImageIcon("searchIcon.jpeg"));
+		searchButton.setBorder(new LineBorder(spotifyGreen));
 		searchButton.setBackground(spotifyGreen);
-
 		searchPanel.add(titleSearch);
 		searchPanel.add(artistSearch);
 		searchPanel.add(searchButton);
@@ -325,13 +322,10 @@ public class SpotifyGui extends JFrame {
 				String title = titleSearch.getText();
 				String artist = artistSearch.getText();
 
-				if (title.equals("")
-						|| title.equals("search song title                 ")) {
+				if (title.equals("") || title.equals("search song title                 ")) {
 					searchArtists(artist);
 				} else {
-					if (artist.equals("")
-							|| artist
-									.equals("search song artist               ")) {
+					if (artist.equals("") || artist.equals("search song artist               ")) {
 						artist = null;
 
 					}
