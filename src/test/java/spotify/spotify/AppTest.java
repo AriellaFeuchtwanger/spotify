@@ -68,4 +68,10 @@ public class AppTest{
 		
 		Assert.assertNotNull(obj.getArtists());
 	}
+	
+	@Test
+	public void testResults() throws IOException{
+		
+	}
+	
 }
