@@ -62,7 +62,8 @@ public class AppTest{
 		Retrofit retrofit = new Retrofit.Builder().baseUrl("https://itunes.apple.com/")
 				.addConverterFactory(GsonConverterFactory.create()).build();
 		ItunesService service = retrofit.create(ItunesService.class);
-		String term = URLEncoder.encode("anthem lights just fall", "UTF-8");
+		//String term = URLEncoder.encode("anthem lights just fall", "UTF-8");
+		String term = "anthem lights just fall";
 		Call<ItunesObject> call = service.searchSongPreview(term);
 		
 		Response<ItunesObject> response = call.execute();

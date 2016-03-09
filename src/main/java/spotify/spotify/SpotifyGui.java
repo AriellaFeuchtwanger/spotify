@@ -127,6 +127,7 @@ public class SpotifyGui extends JFrame {
 
 	}
 
+	//Set up the songs
 	private void setUpTrack(String title, String artist) {
 		JList<Song> songs = new JList<Song>();
 		songs.setBackground(spotifyGreen);
@@ -139,7 +140,7 @@ public class SpotifyGui extends JFrame {
 					Song song = songs.getSelectedValue();
 					setSongInfo(song);
 					recentModel.addElement(song.toString());
-
+					new ItunesThread(song.getArtist(), song.getTitle()).start();
 				}
 			}
 		});
