@@ -5,9 +5,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -19,7 +17,6 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 import javax.swing.BoxLayout;
-import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -93,7 +90,8 @@ public class SpotifyGui extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					Artist artist = artists.getSelectedValue();
-					recentList.add(new JLabel(artist.toString())); // add to recents
+					recentList.add(new JLabel(artist.toString())); // add to
+																	// recents
 					setArtistInfo(artist);
 				}
 			}
@@ -241,10 +239,11 @@ public class SpotifyGui extends JFrame {
 		eastPanel = new JPanel();
 		eastPanel.setBackground(spotifyGreen);
 		eastPanel.setBorder(new LineBorder(Color.BLACK));
-		//eastPanel.setLayout(new FlowLayout());
+		// eastPanel.setLayout(new FlowLayout());
 		similar = new JList<Artist>();
 		similar.setFixedCellWidth(150);
 		similar.setBackground(spotifyGreen);
+		similar.setForeground(Color.BLACK);
 		similar.addMouseListener(new MouseAdapter() {
 
 			@Override
@@ -256,12 +255,11 @@ public class SpotifyGui extends JFrame {
 			}
 		});
 
-		similar.setForeground(Color.BLACK);
 		// eastPanel.add(new JLabel("SIMILAR ARTISTS"));
 		eastPanel.add(new JLabel(new ImageIcon("similarArtists.png")));
 		eastPanel.add(similar);
 		eastPanel.setPreferredSize(new Dimension(150, getHeight()));
-		//eastPanel.setAlignmentX(LEFT_ALIGNMENT);
+		// eastPanel.setAlignmentX(LEFT_ALIGNMENT);
 		container.add(eastPanel, BorderLayout.EAST);
 	}
 
