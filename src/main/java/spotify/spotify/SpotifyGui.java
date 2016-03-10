@@ -43,7 +43,7 @@ public class SpotifyGui extends JFrame {
 	private JLabel songLbl, artistLbl, imageLbl;
 	private JList<Artist> artists, similar;
 	private JList<String> recentList;
-	private JList<Song> artistSongs;
+	private JList<Song> artistSongs, songs;
 	private JTextField titleSearch, artistSearch;
 	private JButton searchButton;
 	private Container container;
@@ -53,7 +53,7 @@ public class SpotifyGui extends JFrame {
 
 	public SpotifyGui() {
 		setTitle("Spotify");
-		setSize(750, 600);
+		setSize(850, 600);
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		container = getContentPane();
@@ -107,6 +107,7 @@ public class SpotifyGui extends JFrame {
 
 	private void setArtistInfo(Artist artist) {
 		JPanel artistPanel = new JPanel();
+		artistPanel.setLayout(new BoxLayout(artistPanel, BoxLayout.Y_AXIS));
 		artistPanel.setBackground(spotifyGreen);
 
 		JLabel artistName = new JLabel(artist.getName());
@@ -126,10 +127,11 @@ public class SpotifyGui extends JFrame {
 				}
 			}
 		});
+		JScrollPane scroll = new JScrollPane(artistSongs);
 		new ArtistSongsThread(artistSongs, artist.getName()).start();
 
 		artistPanel.add(artistName);
-		artistPanel.add(artistSongs);
+		artistPanel.add(scroll);
 
 		resetContainer(artistPanel);
 		currCenter = artistPanel;
@@ -139,7 +141,7 @@ public class SpotifyGui extends JFrame {
 
 	// Set up the songs
 	private void setUpTrack(String title, String artist) {
-		JList<Song> songs = new JList<Song>();
+		songs = new JList<Song>();
 		songs.setBackground(spotifyGreen);
 		songs.addMouseListener(new MouseAdapter() {
 
@@ -180,8 +182,9 @@ public class SpotifyGui extends JFrame {
 			}
 		});
 		songs.setFixedCellWidth(300);
-		resetContainer(songs);
-		currCenter = songs;
+		JScrollPane scroll = new JScrollPane(songs);
+		resetContainer(scroll);
+		currCenter = scroll;
 		JList<Song> similar = new JList<Song>();
 		SongThread thread = new SongThread(title, artist, songs, similar);
 		thread.start();
@@ -237,7 +240,7 @@ public class SpotifyGui extends JFrame {
 
 	private void setUpEast() {
 		eastPanel = new JPanel();
-		eastPanel.setBackground(spotifyGreen);
+		eastPanel.setBackground(Color.BLACK);
 		eastPanel.setBorder(new LineBorder(Color.BLACK));
 		// eastPanel.setLayout(new FlowLayout());
 		similar = new JList<Artist>();
