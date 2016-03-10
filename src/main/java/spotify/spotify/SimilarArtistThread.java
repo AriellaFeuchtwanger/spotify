@@ -16,6 +16,7 @@ public class SimilarArtistThread extends Thread{
 	
 	public SimilarArtistThread(JList<Artist> similar, String artist){
 		this.similar = similar;
+		similar.setFixedCellWidth(150);
 		this.artist = artist;
 	}
 	
