@@ -151,7 +151,7 @@ public class SpotifyGui extends JFrame {
 
 					Song song = songs.getSelectedValue();
 					setSongInfo(song);
-					recentList.add(new JLabel("song.toString()"));
+					recentList.add(new JLabel(song.toString()));
 					// MediaPlayer player = null;
 					// new ItunesThread(song.getArtist(),
 					// song.getTitle()).start();
@@ -277,6 +277,7 @@ public class SpotifyGui extends JFrame {
 		// recentModel.addElement("RECENT SEARCHES");
 		recentList.setFixedCellWidth(150);
 		westPanel.add(new JLabel(new ImageIcon("recentSearches.png")));
+		//recentList.add(new JLabel(new ImageIcon("recentSearches.png")));
 		westPanel.add(recentList);
 		container.add(westPanel, BorderLayout.WEST);
 	}
@@ -333,7 +334,9 @@ public class SpotifyGui extends JFrame {
 				} else {
 					if (artist.equals("") || artist.equals("search song artist               ")) {
 						artist = null;
-
+						recentList.add(new JLabel(artist));
+					} else{
+						recentList.add(new JLabel(artist + " " + title));
 					}
 					// CENTER - track
 					setUpTrack(title, artist);
