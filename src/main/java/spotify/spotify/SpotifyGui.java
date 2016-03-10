@@ -26,6 +26,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 import javax.swing.border.LineBorder;
@@ -97,9 +98,9 @@ public class SpotifyGui extends JFrame {
 				}
 			}
 		});
-
-		resetContainer(artists);
-		currCenter = artists;
+		JScrollPane scroll = new JScrollPane(artists);
+		resetContainer(scroll);
+		currCenter = scroll;
 		similar.setFixedCellWidth(150);
 		new ArtistThread(artists, artist).start();
 		new SimilarArtistThread(similar, artist).start();
