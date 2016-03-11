@@ -63,7 +63,7 @@ public class SpotifyGui extends JFrame {
 		container.setLayout(new BorderLayout());
 
 		try {
-			setIconImage(ImageIO.read(new File("spotify_icon.png")));
+			setIconImage(ImageIO.read(getClass().getResource("/spotifyIcon.png")));
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -71,7 +71,7 @@ public class SpotifyGui extends JFrame {
 
 		spotifyGreen = Color.decode("#638c00");
 
-		JLabel defaultImage = new JLabel(new ImageIcon("bigspotify.png"));
+		JLabel defaultImage = new JLabel(new ImageIcon(getClass().getResource("/bigspotify.png")));
 		container.add(defaultImage, BorderLayout.CENTER);
 		container.setBackground(spotifyGreen);
 		currCenter = defaultImage;
@@ -182,8 +182,8 @@ public class SpotifyGui extends JFrame {
 					String url = obj.getPreviewURL();
 					JFXPanel fxPanel = new JFXPanel();
 					Media song2 = new Media(url);
+					//new ItunesThread(song.getArtist(), song.getTitle(), song2).start();
 					player = new MediaPlayer(song2);
-					// fxPanel.add(player);
 					player.play();
 				}
 			}
@@ -214,7 +214,7 @@ public class SpotifyGui extends JFrame {
 		artistLbl.setFont(font);
 		artistLbl.setForeground(Color.BLACK);
 		artistLbl.setHorizontalAlignment(SwingConstants.CENTER);
-		imageLbl = new JLabel(new ImageIcon("defaultImage.jpg"));
+		imageLbl = new JLabel(new ImageIcon(getClass().getResource("/defaultImage.jpg")));
 		songLbl.setBorder(new LineBorder(Color.BLACK));
 		artistLbl.setBorder(new LineBorder(Color.BLACK));
 		trackPanel.add(songLbl, BorderLayout.SOUTH);
@@ -227,15 +227,7 @@ public class SpotifyGui extends JFrame {
 		Track[] tracks = song.getTracks();
 		if (tracks.length > 0) {
 			String imageURL = tracks[0].getRelease_image();
-			URL track;
-			try {
-				track = new URL(imageURL);
-				BufferedImage trackImage = ImageIO.read(track);
-				imageLbl.setIcon(new ImageIcon(trackImage));
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			new SongImageThread(imageURL, imageLbl).start();
 		}
 
 		resetContainer(trackPanel);
@@ -261,7 +253,7 @@ public class SpotifyGui extends JFrame {
 		
 
 		// eastPanel.add(new JLabel("SIMILAR ARTISTS"));
-		eastPanel.add(new JLabel(new ImageIcon("similarArtists.png")));
+		eastPanel.add(new JLabel(new ImageIcon(getClass().getResource("/similarArtists.png"))));
 		//setSimilar();
 		eastPanel.add(similar);
 		// eastPanel.setAlignmentX(LEFT_ALIGNMENT);
@@ -281,7 +273,7 @@ public class SpotifyGui extends JFrame {
 		recentList.setForeground(Color.BLACK);
 		// recentModel.addElement("RECENT SEARCHES");
 		recentList.setFixedCellWidth(150);
-		westPanel.add(new JLabel(new ImageIcon("recentSearches.png")));
+		westPanel.add(new JLabel(new ImageIcon(getClass().getResource("/recentSearches.png"))));
 		//recentList.add(new JLabel(new ImageIcon("recentSearches.png")));
 		westPanel.add(recentList);
 		container.add(westPanel, BorderLayout.WEST);
@@ -319,7 +311,7 @@ public class SpotifyGui extends JFrame {
 
 		searchButton = new JButton("SEARCH ");
 		searchButton.setForeground(Color.WHITE);
-		searchButton.setIcon(new ImageIcon("searchIcon.jpeg"));
+		searchButton.setIcon(new ImageIcon(getClass().getResource("/searchIcon.jpeg")));
 		searchButton.setBorder(new LineBorder(spotifyGreen));
 		searchButton.setBackground(spotifyGreen);
 		searchPanel.add(titleSearch);

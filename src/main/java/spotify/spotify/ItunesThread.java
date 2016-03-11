@@ -16,11 +16,12 @@ public class ItunesThread extends Thread {
 	private String artist;
 	private String songTitle;
 	private MediaPlayer player;
-	private Context context;
+	private Media media;
 
-	public ItunesThread(String artist, String songTitle) {
+	public ItunesThread(String artist, String songTitle, Media media) {
 		this.artist = artist.toLowerCase();
 		this.songTitle = songTitle.toLowerCase();
+		this.media = media;
 	}
 
 	public void run() {
@@ -43,9 +44,9 @@ public class ItunesThread extends Thread {
 		ItunesObject obj = response.body();
 		String url = obj.getPreviewURL();
 		JFXPanel fxPanel = new JFXPanel();
-		Media song = new Media(url);
-		player = new MediaPlayer(song);
+		media = new Media(url);
+		//player = new MediaPlayer(song);
 		// fxPanel.add(player);
-		player.play();
+		//player.play();
 	}
 }
