@@ -6,6 +6,11 @@ public class Song {
 	private Track[] tracks;
 	private String artist_id;
 
+	public Song(String title, String artist){
+		this.title = title;
+		this.artist_name = artist;
+	}
+	
 	public String getArtist() {
 		return artist_name;
 	}

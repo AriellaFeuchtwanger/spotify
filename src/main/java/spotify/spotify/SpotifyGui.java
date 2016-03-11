@@ -102,10 +102,11 @@ public class SpotifyGui extends JFrame {
 		JScrollPane scroll = new JScrollPane(artists);
 		resetContainer(scroll);
 		currCenter = scroll;
-		similar.setFixedCellWidth(150);
+		
+		setSimilar();
+		
 		new ArtistThread(artists, artist).start();
 		new SimilarArtistThread(similar, artist).start();
-
 	}
 
 	private void setArtistInfo(Artist artist) {
@@ -116,6 +117,8 @@ public class SpotifyGui extends JFrame {
 		JLabel artistName = new JLabel(artist.getName());
 		artistName.setBackground(spotifyGreen);
 
+		setSimilar();
+		
 		artistSongs = new JList<Song>();
 		artistSongs.setBackground(spotifyGreen);
 		artistSongs.setForeground(Color.BLACK);
@@ -126,7 +129,7 @@ public class SpotifyGui extends JFrame {
 			public void mouseClicked(MouseEvent e) {
 				if (e.getClickCount() == 2) {
 					Song song = artistSongs.getSelectedValue();
-					setUpTrack(song.getTitle(), song.getArtist());
+					searchTrack(song.getTitle(), song.getArtist());
 				}
 			}
 		});
@@ -143,7 +146,7 @@ public class SpotifyGui extends JFrame {
 	}
 
 	// Set up the songs
-	private void setUpTrack(String title, String artist) {
+	private void searchTrack(String title, String artist) {
 		songs = new JList<Song>();
 		songs.setBackground(spotifyGreen);
 		songs.setForeground(Color.BLACK);
@@ -191,7 +194,11 @@ public class SpotifyGui extends JFrame {
 		currCenter = scroll;
 		JList<Song> similar = new JList<Song>();
 		SongThread thread = new SongThread(title, artist, songs, similar);
+		try{
 		thread.start();
+		} catch (ArrayIndexOutOfBoundsException e){
+			songs.add(new JLabel("No songs found"));
+		}
 		container.revalidate();
 	}
 
@@ -243,7 +250,7 @@ public class SpotifyGui extends JFrame {
 
 	private void setUpEast() {
 		eastPanel = new JPanel();
-		eastPanel.setBackground(Color.BLACK);
+		eastPanel.setBackground(spotifyGreen);
 		eastPanel.setBorder(new LineBorder(Color.BLACK));
 		eastPanel.setPreferredSize(new Dimension(180, getHeight()));
 		// eastPanel.setLayout(new FlowLayout());
@@ -251,19 +258,11 @@ public class SpotifyGui extends JFrame {
 		similar.setFixedCellWidth(150);
 		similar.setBackground(spotifyGreen);
 		similar.setForeground(Color.BLACK);
-		similar.addMouseListener(new MouseAdapter() {
-
-			@Override
-			public void mouseClicked(MouseEvent e) {
-				if (e.getClickCount() == 2) {
-					Artist artist = similar.getSelectedValue();
-					searchArtists(artist.getName());
-				}
-			}
-		});
+		
 
 		// eastPanel.add(new JLabel("SIMILAR ARTISTS"));
 		eastPanel.add(new JLabel(new ImageIcon("similarArtists.png")));
+		//setSimilar();
 		eastPanel.add(similar);
 		// eastPanel.setAlignmentX(LEFT_ALIGNMENT);
 		container.add(eastPanel, BorderLayout.EAST);
@@ -272,7 +271,7 @@ public class SpotifyGui extends JFrame {
 	private void setUpWest() {
 		westPanel = new JPanel();
 		westPanel.setPreferredSize(new Dimension(180, getHeight()));
-		westPanel.setBackground(Color.BLACK);
+		westPanel.setBackground(spotifyGreen);
 		westPanel.setBorder(new LineBorder(Color.BLACK));
 		//westPanel.setLayout(new BoxLayout(westPanel, BoxLayout.Y_AXIS));
 		recentModel = new DefaultListModel<String>();
@@ -332,28 +331,49 @@ public class SpotifyGui extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
+				similar = new JList<Artist>();
 				String title = titleSearch.getText();
 				String artist = artistSearch.getText();
 
 				if (title.equals("") || title.equals("search song title                 ")) {
 					searchArtists(artist);
+					recentModel.addElement(artist);
 				} else {
 					if (artist.equals("") || artist.equals("search song artist               ")) {
 						artist = null;
 						//recentList.add(new JLabel(artist));
-						recentModel.addElement(artist);
+						recentModel.addElement(title);
 					} else{
 						//recentList.add(new JLabel(artist + " " + title));
 						recentModel.addElement(artist + " - " + title);
 					}
 					// CENTER - track
-					setUpTrack(title, artist);
+					searchTrack(title, artist);
 
 				}
 			}
 		});
 	}
 
+	public void setSimilar(){
+		eastPanel.remove(similar);
+		container.revalidate();
+		similar = new JList<Artist>();
+		similar.setFixedCellWidth(150);
+		similar.setBackground(spotifyGreen);
+		similar.addMouseListener(new MouseAdapter() {
+
+			@Override
+			public void mouseClicked(MouseEvent e) {
+				if (e.getClickCount() == 2) {
+					Artist artist = similar.getSelectedValue();
+					searchArtists(artist.getName());
+				}
+			}
+		});
+		eastPanel.add(similar);
+	}
+	
 	public static void main(String[] args) {
 		SpotifyGui gui = new SpotifyGui();
 		gui.setVisible(true);
